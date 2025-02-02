@@ -1,0 +1,400 @@
+:root {
+  --button-color: rgb(0, 132, 255);
+  --offert-color: rgb(233, 0, 0);
+  --badge-color: rgb(9, 209, 76);
+  --form-background-color: rgba(204, 228, 255, 0.507);
+  --separator-color: rgb(160, 160, 160);
+  --p-size: 1.2em;
+  --wrapper-max-size: 1440px;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.wrapper {
+  max-width: var(--wrapper-max-size);
+  margin: 0 auto;
+}
+
+.separador {
+  border-bottom: 1px solid var(--separator-color);
+}
+
+
+/* Barra de navegación/Encabezado */
+
+.navigator-bar {
+  display: flex;
+  padding: 30px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+@media (width <= 1024px) {
+  .navigator-bar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.navigator-bar__logo {
+  align-self: center;
+}
+
+.navigator-bar__logo a {
+  font-weight: bold;
+  font-size: 1.25em;
+}
+
+.navigator-bar__space {
+  flex-grow: 1;
+}
+
+.links-list {
+  display: flex;
+  list-style-type: none;
+  gap: 20px;
+  align-items: center;
+}
+
+.links-list__shop,
+.links-list__access,
+.links-list__support {
+  transition: font-size 0.5s ease-in-out;
+  transition: font-weight 0 ease-in-out;
+}
+
+.links-list__shop__img,
+.links-list__access__img,
+.links-list__contact__img,
+.links-list__support__img {
+  display: none;
+}
+
+
+.links-list__contact {
+    border: 1px solid grey;
+    border-radius: 4px;
+    padding: 8px;
+    transition: background-color 0.3s, color 0.3s;
+  
+    &:hover {
+      background-color: rgb(36, 36, 36);
+      color: #ffffff;
+    }
+  }
+
+@media (width <= 1024px) {
+  .links-list__shop p,
+  .links-list__access p,
+  .links-list__support p,
+  .links-list__contact {
+    display: none;
+  }
+
+  .links-list__shop__img,
+  .links-list__access__img,
+  .links-list__support__img,  
+  .links-list__contact__img {
+    display: block;
+    width: 25px;
+    height: 25px;
+  }
+}
+
+
+/* Artículo Principal */
+
+.main-product {
+  display: flex;
+  gap: 30px;
+  padding: 50px;
+  position: relative;
+}
+
+@media (width <= 1024px) {
+  .main-product {
+    flex-direction: column;
+    justify-content: start;
+    padding: 20px;
+  }
+}
+
+.main-product__img {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+}
+
+.main-product__image {
+  width: 100%;
+  height: auto;
+}
+
+.main-product__Gb-Badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: var(--badge-color);
+  color: white;
+  padding: 10px 10px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.main-product__info {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.main-product__info p {
+  font-size: var(--p-size);
+  line-height: 1.5em;
+}
+
+.main-product__info h5 {
+  color: var(--offert-color);
+  font-size: var(--p-size);
+}
+
+.main-product__info h2 {
+  font-size: 2.5rem;
+}
+
+.price-bar {
+  display: flex;
+  gap: 25px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.price-bar button,
+.form-button {
+  padding: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: var(--button-color);
+  color: #ffffff;
+  border-radius: 5px;
+  border: 1px solid grey;
+  font-size: var(--p-size);
+
+  &:hover {
+    background-color: rgb(0, 132, 255, 0.8);
+  }
+}
+
+.low-bar__list {
+  list-style-type: none;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.low-bar__list li {
+  max-width: 200px;
+}
+
+.low-bar__list a {
+  font-size: var(--p-size);
+}
+
+.low-bar__list__component {
+  flex-grow: 1;
+}
+
+.low-bar__list__component__ref {
+  flex-grow: 1;
+}
+
+.fastShipping {
+  display: flex;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+.fastShipping__icon {
+  max-width: 30px;
+  max-height: 30px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.easyReturns {
+  display: flex;
+  gap: 15px;
+}
+
+.easyReturns__icon {
+  max-width: 30px;
+  max-height: 30px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.paymentPossibilities {
+  display: flex;
+  gap: 15px;
+}
+
+.paymentPossibilities__icon {
+  max-width: 30px;
+  max-height: 30px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+
+/* Accesorios o productos secundarios */
+
+.secondaryProducts {
+  padding: 50px;
+}
+
+.secondaryProducts h2 {
+  font-size: 2.5em;
+}
+
+.recommendedAcc {
+  padding-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+@media (width <= 1024px) {
+  .recommendedAcc {
+    justify-content: center;
+  }
+}
+
+.recommendedAcc__charger,
+.recommendedAcc__base,
+.recommendedAcc__cover {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  max-width: 270px;
+  border-radius: 15px;
+  border: 1px solid grey;
+  gap: 15px;
+  box-sizing: border-box;
+  flex-grow: 1;
+}
+
+.recommendedAcc__base__offert {
+  background-color: var(--offert-color);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-bottom: 10px;
+  width: fit-content;
+}
+
+.recommendedAcc__charger__new {
+  background-color: var(--button-color);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-bottom: 10px;
+  width: fit-content;
+}
+
+
+/* Formulario para concurso */
+
+.raffle {
+  padding: 50px;
+}
+
+.raffle-form {
+  background-color: var(--form-background-color);
+  padding: 50px;
+  display: flex;
+  margin-bottom: 50px;
+  align-items: center;
+  gap: 50px;
+}
+
+@media (width <= 1024px) {
+  .raffle {
+    padding: 20px;
+  }
+
+  .raffle-form {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 35px;
+  }
+}
+
+.raffle-form__description {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.raffle-form__description h2 {
+  font-size: 4.5em;
+}
+
+@media (width <= 1024px) {
+  .raffle-form__description h2 {
+    font-size: 1.8em;
+  }
+}
+
+.raffle-form__description__paragraph {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1.5em;
+}
+
+.raffle-form__form {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.2em;
+  gap: 20px;
+}
+
+.raffle-form__form__name,
+.raffle-form__form__email {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-list {
+  list-style-type: none;
+  box-sizing: border-box;
+}
+
+::placeholder {
+  font-size: 0.8em;
+  color: #9e9e9ef3;
+}
+
+
+/* Pie de Página */ 
+
+footer {
+  border-top: 1px solid var(--separator-color);
+  text-align: center;
+  padding: 15px;
+  font-weight: bold;
+}
