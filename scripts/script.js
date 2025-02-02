@@ -1,15 +1,14 @@
-let carrito = [] // Variable global para almacenar el carrito de compras
 
 let url = "https://jsonblob.com/api/1335554124770631680"
-
+let productos = [] //Array que contiene todos los productos disponibles de la tienda
+let carrito = [] //Variable global para almacenar el carrito de compras
 
 class Carrito {
 
     constructor(productos, currency) {
-        this.productos = productos
-        productos.forEach(producto => producto.quantity = 0)
-        this.currency = currency
-        this.total = 0
+        this.productosCarrito = productos //Aray de productos del carrito
+        this.currency = currency //Divisa del carrito
+        this.total = 0 //Total acumulado del carrito
     }
 
     /*
@@ -17,42 +16,60 @@ class Carrito {
         Es llamada cada vez que se pulsa cualquiera de los botones de aumentar o disminuir unidades de cada producto.
     */
     actualizarUnidades(SKU, unidades) {
-        // Actualiza el número de unidades que se quieren comprar de un producto        
-        const producto = this.productos.find(product => product.SKU === SKU)
+        const producto = productos.find(product => product.SKU === SKU)
 
         if (producto && (unidades === 1 || (unidades === -1 && producto.quantity > 0))) { //No deja unidades negativas
-            producto.quantity += unidades
-            this.total = this.productos.reduce((acc, product) => acc + product.quantity *
+            if(!this.productosCarrito.find(p => p.SKU === SKU)) { //Si no existe este producto en e carrito
+                producto.quantity = 1
+                this.productosCarrito.push(producto)                
+            } else {
+                producto.quantity += unidades
+                if(producto.quantity === 0){ //Si las unidades del producto en el carrito son 0, se elimina del carrito
+                    this.eliminarProductoDelCarrito(producto.SKU)
+                }
+            }
+            
+            this.total = this.productosCarrito.reduce((acc, product) => acc + product.quantity *
                 parseFloat(product.price), 0)
         }
     }
 
     /*
-        Función que devuelve la información de un producto que obtenemos en función de su SKU dado por parámetro.
+        Función que elimina del carrito un producto que obtenemos en función de su SKU dado por parámetro.
+    */
+    eliminarProductoDelCarrito(SKU){
+        let index = this.productosCarrito.findIndex(p => p.SKU === SKU)
+
+        if (index !== -1) {
+            this.productosCarrito.splice(index, 1)
+        }
+    }
+
+    /*
+        Función que devuelve las unidades y el SKU de un producto que obtenemos en función de su SKU dado por parámetro.
     */
     obtenerInformacionProducto(SKU) {
-        const producto = this.productos.find(p => p.SKU === SKU)
+        const producto = this.productosCarrito.find(p => p.SKU === SKU)
 
-        if (producto) {
-            return {
-                SKU: producto.SKU,
-                title: producto.title,
-                price: producto.price,
-                quantity: producto.quantity
-            }
-        }
+        return producto ? { SKU: producto.SKU, quantity: producto.quantity } : { SKU, quantity: 0 } //Si no existe el producto devuelve 0
+
     }
 
 
     /*
-        Función que devuelve la informacion de todo el carrito, desde su total y su divisa, hasta los productos que lo componen
+        Función que devuelve la información de todo el carrito, desde su total y su divisa, hasta los productos que lo componen
     */
     obtenerCarrito() {
         return {
             total: this.total,
             currency: this.currency,
-            products: this.productos.map(producto => {
-                return this.obtenerInformacionProducto(producto.SKU)
+            products: this.productosCarrito.map(producto => {
+                return {
+                    SKU: producto.SKU,
+                    title: producto.title,
+                    price: producto.price,
+                    quantity: producto.quantity
+                }
             })
         }
     }
@@ -63,28 +80,26 @@ class Carrito {
     Es una vez que está inicializada cuando se lleva a cabo toda la lógica de la aplicación.
 */
 function init(){
-    // Cargar los productos desde el archivo JSON
     fetch(url)
     .then((response) => {
         response.json().then((data) => {
-            // Recorrer los productos y agregarlos a la variable global
-            debugger
-            console.log(data)
-            carrito = new Carrito(data.products, data.currency)
-            
+            //Recorrer los productos y agregarlos a la variable global
+            currency = data.currency
+            productos = data.products 
+            carrito = new Carrito([], data.currency)
             mostrarListaProductos() 
             mostrarCarrito()
         })
     })
     .catch((error) => {
         console.error(error)
+        alert("Hubo un problema al cargar los productos. Inténtalo más tarde.")
     })
-
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    init()
+    init() 
 })
 
 
@@ -97,7 +112,7 @@ function mostrarListaProductos(){
 
     //Elimina el tr post d ela tabla, esto lo hago para que no elimine el template, solo lo que hay en él.
     productsTable.querySelectorAll(".post").forEach(row => row.remove())
-    carrito.productos.forEach((producto) => {
+    productos.forEach((producto) => {
         const post = postTemplate.content.cloneNode(true)
 
         //Obtengo todos los elementos de la tabla para luego darles valor
@@ -111,11 +126,18 @@ function mostrarListaProductos(){
 
         SKUCell.textContent = "Ref: " + producto.SKU
         titleCell.textContent = producto.title
-        quantityValue.textContent = producto.quantity
-        priceCell.textContent = producto.price + carrito.currency
-        totalCell.textContent = (producto.price * producto.quantity).toFixed(2) + carrito.currency
 
-        // Eventos de botones
+        let quantity = 0
+        const infoProducto = carrito.obtenerInformacionProducto(producto.SKU)
+        if (infoProducto) { //Comprueba si hay unidades de ese producto en el carrito
+            quantity = infoProducto.quantity
+        }
+
+        quantityValue.textContent = quantity
+        priceCell.textContent = producto.price + carrito.currency
+        totalCell.textContent = (producto.price * quantity).toFixed(2) + carrito.currency
+
+        //Eventos de botones
         btnIncrease.addEventListener("click", () => {
             carrito.actualizarUnidades(producto.SKU, 1)
             mostrarListaProductos()
@@ -126,10 +148,8 @@ function mostrarListaProductos(){
             mostrarListaProductos()
             mostrarCarrito()    
         })
-
         
         productsTable.appendChild(post)
-
     })
 }
 
@@ -138,38 +158,38 @@ function mostrarCarrito() {
     const ticketTemplate = document.getElementById("ticket-template")
     const totalTemplate = document.getElementById("total-template")
 
-    // Limpiar la tabla antes de agregar nuevos datos
+    //Limpiar la tabla antes de agregar nuevos datos
     tableBody.querySelectorAll(".post").forEach(row => row.remove()) //borro el valor de las filas para que asi al mostrar de nuevo se muestre solo lo actualizado
     tableBody.querySelectorAll(".totalTicket").forEach(row => row.remove()) //borro el valor del total para que asi al mostrar de nuevo se muestre solo lo actualizado
 
-    // Obtengo la información del carrito
+    //Obtengo la información del carrito
     const datos = carrito.obtenerCarrito()
+
     datos.products.forEach(producto => {
         if(producto.quantity > 0){
-            const clone = ticketTemplate.content.cloneNode(true) // Clonamos el template
+            //Clonams el template
+            const clone = ticketTemplate.content.cloneNode(true) 
     
-            // Rellenamos las celdas con los datos del producto
+            //Datos del producto
             const productNameCell = clone.querySelector(".ticketProductName")
             const productTotalCell = clone.querySelector(".ticketProductTotal")
     
             productNameCell.textContent = producto.title
             productTotalCell.textContent = (producto.price * producto.quantity).toFixed(2) + carrito.currency
     
-            // Agregar la fila a la tabla
             tableBody.appendChild(clone)
         }
     })
 
-    // Mostrar el total en la tabla
+    //Total en la tabla
     const totalRow = totalTemplate.content.cloneNode(true)
     const totalCell = totalRow.querySelector("td:last-child")
 
-    // Sumar todos los totales de productos
+    //Suma de los totales de cada producto
     const total = datos.products.reduce((acc, producto) => acc + (producto.price * producto.quantity), 0)
     
     totalCell.textContent = total.toFixed(2) + carrito.currency
 
-    // Agregar la fila de total a la tabla
     tableBody.appendChild(totalRow)
 }
 
