@@ -1,8 +1,32 @@
 let productos = []; // Variable global para almacenar los productos
 let carrito = []; // Variable global para almacenar el carrito de compras
 
+let url = "https://jsonblob.com/api/1335554124770631680"
+
+
+function init(){
+    // Cargar los productos desde el archivo JSON
+    fetch(url)
+    .then((response) => {
+        response.json().then((data) => {
+            // Recorrer los productos y agregarlos a la variable global
+            console.log(data)
+            carrito = new Carrito(data.products, data.currency)
+            
+            mostrarListaProductos() 
+        })
+    })
+    .catch((error) => {
+        console.error(error);
+    })
+
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    init()
+
+
 
 
     // const productos = [
@@ -12,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     //     new Product("id4", "AirPods", 199.99, 0, 0)
     // ];
 
-    mostrarProductos()
+    // mostrarProductos()
 
-    const ticketTable = document.getElementById("ticket_table");
+    /*const ticketTable = document.getElementById("ticket_table");
 
     let ticketTemplate = document.querySelector('#ticket-template')
     let totalTemplate = document.querySelector('#total-template');
@@ -48,19 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         ticketTable.appendChild(totalTicketElement);
     }
 
-    renderizarProductos();
+    renderizarProductos();*/
 
 });
 
-
+/*
 class Product {
 
-    constructor(id, name, price, units, total){
-        this.id = id;
-        this.name = name;
+    constructor(SKU, title, price, quantity, total){
+        this.SKU = SKU;
+        this.title = title;
         this.price = price;
-        this.units = units;    
-        this.total = total;    
+        this.quantity = quantity;  
     }
 
     // Función para actualizar la cantidad
@@ -74,51 +97,54 @@ class Product {
             totalCell.textContent = this.total.toFixed(2) + "€";
         }
     }
-}
+}*/
 
 
 
 class Carrito {
 
-    constructor(productos) {
+    constructor(productos, currency) {
         this.productos = productos;
+        productos.forEach(producto => producto.quantity = 0);
+        this.currency = currency;
         this.total = 0;   
     }
 
-
-    actualizarUnidades(sku, unidades) {
+    //Se tiene que llamar a esta funcion cuando se pulse el boton de aumentar o disminuir
+    actualizarUnidades(SKU, unidades) {
+        debugger
         // Actualiza el número de unidades que se quieren comprar de un producto
-        const producto = this.productos.find(product => product.id === sku);
+        const producto = this.productos.find(product => product.SKU === SKU);
         if (producto) {
-            producto.unidades = unidades;
-            this.total = this.productos.reduce((acc, product) => acc + product.units *
+            producto.quantity += unidades;
+            this.total = this.productos.reduce((acc, product) => acc + product.quantity *
             parseFloat(product.price), 0);
+            mostrarListaProductos()
         }
     }
 
-
-    obtenerInformacionProducto(sku) {
+    //Se llama a esta función para mostrar los productos en el "panel" de la izquierda
+    obtenerInformacionProducto(SKU) {
         // Devuelve los datos de un producto además de las unidades seleccionadas
         // Por ejemplo
         // {
-        // "sku": "0K3QOSOV4V",
+        // "SKU": "0K3QOSOV4V",
         // "quantity": 3
         // }
-        const producto = this.productos.find(p => p.id === sku);
+        const producto = this.productos.find(p => p.SKU === SKU);
         if (producto) {
             return {
-                sku: producto.id,
-                name: producto.name,
-                quantity: producto.units,
+                SKU: producto.SKU,
+                name: producto.title,
                 price: producto.price,
-                total: producto.total
+                quantity: producto.quantity
             };
         }
 
     }
 
 
-
+    //Se llama a esta funcion para obtener la info del carrito y mostrarlo en el "panel" de la derecha
     obtenerCarrito() {
         // Devuelve información de los productos añadidos al carrito
         // Además del total calculado de todos los productos
@@ -128,7 +154,7 @@ class Carrito {
         // "currency: "€",
         // "products" : [
         // {
-        // "sku": "0K3QOSOV4V"
+        // "SKU": "0K3QOSOV4V"
         // ..
         // }
         // ]}
@@ -137,137 +163,93 @@ class Carrito {
             total: this.total,
             currency: "€",
             products: this.productos.map(producto => {
-                return this.obtenerInformacionProducto(producto.id)
+                return {
+                    SKU: producto.SKU,
+                    name: producto.title,
+                    price: producto.price,
+                    quantity: producto.quantity
+                }
             })
         }
     }
 }
 
 
+    function mostrarListaProductos(){
+        const productsTable = document.getElementById('products_table');
+        const postTemplate = document.getElementById('post-template')
 
-        //OPCION 1 DE LO QUE EXPLICÓ FELIX
+        //Elimina el tr post d ela tabla, esto lo hago para que no elimine el template, solo lo que hay en él.
+        productsTable.querySelectorAll(".post").forEach(row => row.remove());
+        carrito.productos.forEach((producto) => {
+            const post = postTemplate.content.cloneNode(true);
 
-        // let row = document.createElement("tr");
+            const row = post.querySelector(".post");
+            const titleCell = post.querySelector(".title");
+            const priceCell = post.querySelector(".price");
+            const quantityValue = post.querySelector(".quantity-value");
+            const totalCell = post.querySelector(".total");
+            const btnIncrease = post.querySelector(".increase");
+            const btnDecrease = post.querySelector(".decrease");
 
-        // // Celda del nombre del producto
-        // let productCell = document.createElement("td");
-        // productCell.textContent = producto.name;
+            row.setAttribute("data-sku", producto.SKU);
+            titleCell.textContent = producto.title;
+            quantityValue.textContent = producto.quantity;
+            priceCell.textContent = producto.price + carrito.currency;
+            debugger
+            totalCell.textContent = parseFloat(producto.price * producto.quantity).toFixed(2) + carrito.currency;
 
-        // // Celda de los botones + Unidades
-        // let buttonCell = document.createElement("td");
-
-        // // Botón para disminuir
-        // let decreaseButton = document.createElement("button");
-        // decreaseButton.textContent = "-";
-        // decreaseButton.onclick = () => producto.updateQuantity(producto, -1);
-
-        // // Botón para aumentar
-        // let increaseButton = document.createElement("button");
-        // increaseButton.textContent = "+";
-        // increaseButton.onclick = () => producto.updateQuantity(producto, 1);
-
-        // //Unidades
-        // let units = document.createElement("span");
-        // units.id = `units-${producto.id}`;
-        // units.textContent = producto.units;
-
-        // //Celda del precio
-        // let priceCell = document.createElement("td");
-        // //priceCell.id = `price-${producto.id}`;
-        // priceCell.textContent = producto.price.toFixed(2) + "€";
-
-        // // Celda de total
-        // let totalCell = document.createElement("td");
-        // totalCell.id = `total-${producto.id}`;
-        // totalCell.textContent = producto.total.toFixed(2) + "€";
-
-        // // Agregar botones a la celda de acciones
-        // buttonCell.appendChild(decreaseButton);
-        // buttonCell.appendChild(units);
-        // buttonCell.appendChild(increaseButton);
-
-        // // Agregar celdas a la fila
-        // row.appendChild(productCell);
-        // row.appendChild(buttonCell);
-        // row.appendChild(priceCell);
-        // row.appendChild(totalCell);
-
-        // // Agregar la fila a la tabla
-        // productsTable.appendChild(row);
+            // Eventos de botones
+            btnIncrease.addEventListener("click", () => carrito.actualizarUnidades(producto.SKU, 1));
+            btnDecrease.addEventListener("click", () => carrito.actualizarUnidades(producto.SKU, -1));
 
 
+            productsTable.appendChild(post);
 
+        })
+    }
 
-        async function mostrarProductos(){
-            cargarProductos().then(() => {
-                // Aquí ya puedes renderizar los productos después de que se cargaron
-                const productsTable = document.getElementById("products_table");
+        function mostrarProductos(data){
+            // Aquí ya puedes renderizar los productos después de que se cargaron
+            const productsTable = document.getElementById("products_table");
 
-                carrito = new Carrito(productos)
-                const postTemplate = document.querySelector('#post-template')
-                debugger
-                const i = carrito.obtenerCarrito();
-                carrito.obtenerCarrito().products.forEach((producto, index) => {
-                    const nuevoPost = postTemplate.content.cloneNode(true)
-            
-                    nuevoPost.querySelector(".product").textContent = producto.name;
-                    nuevoPost.querySelector(".price").textContent = producto.price;
-                    nuevoPost.querySelector(".total").textContent = producto.total + "€";
-            
-                    // Obtener referencias a los elementos dentro del template
-                    const unitsSpan = nuevoPost.querySelector(".unit-value");
-                    const totalCell = nuevoPost.querySelector(".total");
-            
-                    // Inicializar el valor de unidades
-                    unitsSpan.textContent = producto.units;
-            
-                    // Asignar eventos a los botones
-                    nuevoPost.querySelector(".decrease").onclick = () => {
-                        producto.updateQuantity(-1, unitsSpan, totalCell);
-                        carrito.actualizarUnidades(producto.id, producto.units)
-                        renderizarProductos()
-                    }
-            
-                    nuevoPost.querySelector(".increase").onclick = () => {
-                        producto.updateQuantity(1, unitsSpan, totalCell);            
-                        carrito.actualizarUnidades(producto.id, producto.units)
-                        renderizarProductos()
-                    }
-            
-                    // Agregar fila clonada a la tabla
-                    productsTable.appendChild(nuevoPost);
-            
-            
-                });
-                // Aquí va el código para renderizar los productos en la página
-            }).catch(error => {
-                console.error("Error al cargar los productos:", error);
+            carrito = new Carrito(data.products)
+            const postTemplate = document.querySelector('#post-template')
+            const i = carrito.obtenerCarrito();
+            carrito.obtenerCarrito().products.forEach((producto) => {
+                const nuevoPost = postTemplate.content.cloneNode(true)
+        
+                nuevoPost.querySelector(".title").textContent = producto.name;
+                nuevoPost.querySelector(".price").textContent = producto.price;
+                nuevoPost.querySelector(".total").textContent = producto.total + "€";
+        
+                // Obtener referencias a los elementos dentro del template
+                const unitsSpan = nuevoPost.querySelector(".unit-value");
+                const totalCell = nuevoPost.querySelector(".total");
+        
+                // Inicializar el valor de unidades
+                unitsSpan.textContent = producto.units;
+        
+                // Asignar eventos a los botones
+                nuevoPost.querySelector(".decrease").onclick = () => {
+                    producto.updateQuantity(-1, unitsSpan, totalCell);
+                    carrito.actualizarUnidades(producto.id, producto.units)
+                    renderizarProductos()
+                }
+        
+                nuevoPost.querySelector(".increase").onclick = () => {
+                    producto.updateQuantity(1, unitsSpan, totalCell);            
+                    carrito.actualizarUnidades(producto.id, producto.units)
+                    renderizarProductos()
+                }
+        
+                // Agregar fila clonada a la tabla
+                productsTable.appendChild(nuevoPost);
+        
+        
             });
-
+            // Aquí va el código para renderizar los productos en la página
+            
 
         }
 
-
-        async function cargarProductos() {
-
-            try {
-                const response = await fetch("../productos.json"); // Cargar JSON
-        
-                if (!response.ok) {
-                    throw new Error(`Error al cargar JSON: ${response.status}`);
-                }
-        
-                const data = await response.json(); // Convertir JSON a objeto
-        
-                if (!data.products || !Array.isArray(data.products)) {
-                    throw new Error("El JSON no contiene un array de productos.");
-                }
-        
-                // Convertir los datos en instancias de Product
-                productos = data.products.map(p => new Product(p.SKU, p.title, p.price, 0, 0));
-        
-                console.log("Productos cargados:", productos);
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }

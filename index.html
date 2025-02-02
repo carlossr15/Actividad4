@@ -7,7 +7,6 @@
     <!-- Reset de Css -->
     <link rel="stylesheet" href="css/styles.css" />
     <!-- Hoja de estilos utilizada -->
-    <script src="scripts/script.js"></script>
     <title>agoodshop</title>
   </head>
   <body>
@@ -37,12 +36,12 @@
               </tr>
             </thead>
             <tbody id="products_table">
-              <template id="post-template">
+              <template id="post-template"> 
                 <tr class="post">
-                  <td class="product"></td>
-                  <td class="units">
+                  <td class="title"></td>
+                  <td class="quantity">
                     <button class="decrease">-</button>
-                    <span class="unit-value"></span>
+                    <span class="quantity-value"></span>
                     <button class="increase">+</button>
                   </td>
                   <td class="price"></td>
@@ -81,6 +80,7 @@
       </div>
     </article>
 
+    <script src="scripts/script.js"></script>
 
   </body>
 </html>
