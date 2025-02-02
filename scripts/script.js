@@ -14,6 +14,7 @@ function init(){
             carrito = new Carrito(data.products, data.currency)
             
             mostrarListaProductos() 
+            mostrarCarrito()
         })
     })
     .catch((error) => {
@@ -26,78 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     init()
 
-
-
-
-    // const productos = [
-    //     new Product("id1", "iPhone 13 Pro", 939.5, 0, 0),
-    //     new Product("id2", "Cargador", 49.99, 0, 0),
-    //     new Product("id3", "Funda de piel", 79.99, 0, 0),
-    //     new Product("id4", "AirPods", 199.99, 0, 0)
-    // ];
-
-    // mostrarProductos()
-
-    /*const ticketTable = document.getElementById("ticket_table");
-
-    let ticketTemplate = document.querySelector('#ticket-template')
-    let totalTemplate = document.querySelector('#total-template');
-
-    function renderizarProductos(){
-        // Borrar contenido anterior
-        ticketTable.innerHTML = '';
-
-        const newCarrito = carrito.obtenerCarrito()
-
-        // Iterar sobre los productos del carrito
-        newCarrito.products.forEach((producto) => {
-            if (producto.quantity > 0) {
-                // Clonar el template para cada producto
-                const nuevoTicket = ticketTemplate.content.cloneNode(true);
-
-                // Llenar los datos del producto
-                nuevoTicket.querySelector(".ticketProductName").textContent = producto.name;
-                nuevoTicket.querySelector(".ticketProductTotal").textContent = producto.total;
-
-                // Agregar la fila del producto al ticketTable
-                ticketTable.appendChild(nuevoTicket);
-            }
-        });
-
-        // Clonar y agregar el template del total al final
-        const totalTicketElement = totalTemplate.content.cloneNode(true);
-        totalTicketElement.querySelector(".totalTicket td:last-child").textContent = newCarrito.total;
-
-        // Agregar la fila del total
-        ticketTable.appendChild(totalTicketElement);
-    }
-
-    renderizarProductos();*/
-
 });
-
-/*
-class Product {
-
-    constructor(SKU, title, price, quantity, total){
-        this.SKU = SKU;
-        this.title = title;
-        this.price = price;
-        this.quantity = quantity;  
-    }
-
-    // Función para actualizar la cantidad
-    updateQuantity(change, unitsSpan, totalCell) {
-        if (this.units + change >= 0) { // Evitar valores negativos
-            this.units += change;
-            this.total = this.units * this.price;
-
-            // Actualizar UI
-            unitsSpan.textContent = this.units;
-            totalCell.textContent = this.total.toFixed(2) + "€";
-        }
-    }
-}*/
 
 
 
@@ -112,7 +42,6 @@ class Carrito {
 
     //Se tiene que llamar a esta funcion cuando se pulse el boton de aumentar o disminuir
     actualizarUnidades(SKU, unidades) {
-        debugger
         // Actualiza el número de unidades que se quieren comprar de un producto
         const producto = this.productos.find(product => product.SKU === SKU);
         if (producto) {
@@ -120,6 +49,7 @@ class Carrito {
             this.total = this.productos.reduce((acc, product) => acc + product.quantity *
             parseFloat(product.price), 0);
             mostrarListaProductos()
+            mostrarCarrito()
         }
     }
 
@@ -135,7 +65,7 @@ class Carrito {
         if (producto) {
             return {
                 SKU: producto.SKU,
-                name: producto.title,
+                title: producto.title,
                 price: producto.price,
                 quantity: producto.quantity
             };
@@ -165,7 +95,7 @@ class Carrito {
             products: this.productos.map(producto => {
                 return {
                     SKU: producto.SKU,
-                    name: producto.title,
+                    title: producto.title,
                     price: producto.price,
                     quantity: producto.quantity
                 }
@@ -196,8 +126,7 @@ class Carrito {
             titleCell.textContent = producto.title;
             quantityValue.textContent = producto.quantity;
             priceCell.textContent = producto.price + carrito.currency;
-            debugger
-            totalCell.textContent = parseFloat(producto.price * producto.quantity).toFixed(2) + carrito.currency;
+            totalCell.textContent = (producto.price * producto.quantity).toFixed(2) + carrito.currency;
 
             // Eventos de botones
             btnIncrease.addEventListener("click", () => carrito.actualizarUnidades(producto.SKU, 1));
@@ -209,47 +138,44 @@ class Carrito {
         })
     }
 
-        function mostrarProductos(data){
-            // Aquí ya puedes renderizar los productos después de que se cargaron
-            const productsTable = document.getElementById("products_table");
+    function mostrarCarrito() {
+        const tableBody = document.getElementById("ticket_table");
+        const ticketTemplate = document.getElementById("ticket-template");
+        const totalTemplate = document.getElementById("total-template");
+    
+        // Limpiar la tabla antes de agregar nuevos datos
+        tableBody.querySelectorAll(".post").forEach(row => row.remove()); //borro el valor de las filas para que asi al mostrar de nuevo se muestre solo lo actualizado
+        tableBody.querySelectorAll(".totalTicket").forEach(row => row.remove()); //borro el valor del total para que asi al mostrar de nuevo se muestre solo lo actualizado
 
-            carrito = new Carrito(data.products)
-            const postTemplate = document.querySelector('#post-template')
-            const i = carrito.obtenerCarrito();
-            carrito.obtenerCarrito().products.forEach((producto) => {
-                const nuevoPost = postTemplate.content.cloneNode(true)
+        // Mostrar los productos en la tabla
+        const datos = carrito.obtenerCarrito()
+        datos.products.forEach(producto => {
+            if(producto.quantity > 0){
+                const clone = ticketTemplate.content.cloneNode(true); // Clonamos el template
         
-                nuevoPost.querySelector(".title").textContent = producto.name;
-                nuevoPost.querySelector(".price").textContent = producto.price;
-                nuevoPost.querySelector(".total").textContent = producto.total + "€";
+                // Rellenamos las celdas con los datos del producto
+                const productNameCell = clone.querySelector(".ticketProductName");
+                const productTotalCell = clone.querySelector(".ticketProductTotal");
         
-                // Obtener referencias a los elementos dentro del template
-                const unitsSpan = nuevoPost.querySelector(".unit-value");
-                const totalCell = nuevoPost.querySelector(".total");
+                productNameCell.textContent = producto.title;
+                productTotalCell.textContent = (producto.price * producto.quantity).toFixed(2) + " €";
         
-                // Inicializar el valor de unidades
-                unitsSpan.textContent = producto.units;
+                // Agregar la fila a la tabla
+                tableBody.appendChild(clone);
+            }
+        });
+    
+        // Mostrar el total en la tabla
+        const totalRow = totalTemplate.content.cloneNode(true);
+        const totalCell = totalRow.querySelector("td:last-child");
+    
+        // Sumar todos los totales de productos
+        const total = datos.products.reduce((acc, producto) => acc + (producto.price * producto.quantity), 0);
         
-                // Asignar eventos a los botones
-                nuevoPost.querySelector(".decrease").onclick = () => {
-                    producto.updateQuantity(-1, unitsSpan, totalCell);
-                    carrito.actualizarUnidades(producto.id, producto.units)
-                    renderizarProductos()
-                }
-        
-                nuevoPost.querySelector(".increase").onclick = () => {
-                    producto.updateQuantity(1, unitsSpan, totalCell);            
-                    carrito.actualizarUnidades(producto.id, producto.units)
-                    renderizarProductos()
-                }
-        
-                // Agregar fila clonada a la tabla
-                productsTable.appendChild(nuevoPost);
-        
-        
-            });
-            // Aquí va el código para renderizar los productos en la página
-            
+        totalCell.textContent = total.toFixed(2) + " €";
+    
+        // Agregar la fila de total a la tabla
+        tableBody.appendChild(totalRow);
+    }
 
-        }
 
