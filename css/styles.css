@@ -1,0 +1,102 @@
+:root {
+    --button-color: rgb(0, 132, 255);
+    --offert-color: rgb(233, 0, 0);
+    --badge-color: rgb(9, 209, 76);
+    --form-background-color: rgba(204, 228, 255, 0.507);
+    --separator-color: rgb(160, 160, 160);
+    --p-size: 1.2em;
+    --wrapper-max-size: 1440px;
+  }
+  
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  .wrapper {
+    max-width: var(--wrapper-max-size);
+    margin: 0 auto;
+  }
+  
+  .separador {
+    border-bottom: 1px solid var(--separator-color);
+  }
+  
+  
+  /* Barra de navegación/Encabezado */
+  
+  .navigator-bar {
+    display: flex;
+    padding: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  
+  @media (width <= 1024px) {
+    .navigator-bar {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+  
+  .navigator-bar__logo {
+    align-self: center;
+  }
+  
+  .navigator-bar__logo a {
+    font-weight: bold;
+    font-size: 1.25em;
+  }
+  
+  .navigator-bar__space {
+    flex-grow: 1;
+  }
+  
+  .mainShop {
+    padding: 50px;
+    display: flex;
+    gap: 100px;
+  }
+  
+  .mainShop__articles {
+  }
+
+  .mainShop__articles__table {
+    padding: 10px;
+    display: flex;
+    gap: 20px;
+
+  }
+
+  .mainShop__ticket {
+    padding: 50px;
+    background-color: rgb(233, 233, 233);
+  }
+
+
+  .ticket__totalPrice {
+    display: flex;
+    gap: 20px;
+  }
+
+  .mainShop__articles__table th, .mainShop__articles__table td {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 15px;
+    text-align: center;
+  }
+
+
+  .quantityControls__text{
+    width: 25px;
+    text-align: center;
+  }
+
+  .quantityControls button {
+    width: 20px;
+    text-align: center;
+  }

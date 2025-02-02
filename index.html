@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/css_reset.css" />
+    <!-- Reset de Css -->
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Hoja de estilos utilizada -->
+    <script src="scripts/script.js"></script>
+    <title>agoodshop</title>
+  </head>
+  <body>
+    
+    <!-- Barra de navegación/Encabezado -->
+
+    <div class="wrapper">
+      <header class="navigator-bar">
+        <div class="navigator-bar__logo">
+          <a href="">agoodshop</a>
+        </div>
+        <div class="navigator-bar__space"></div>
+      </header>
+    </div>
+    <div class="separador"></div>
+
+    <article class="mainShop">
+      <div class="mainShop__articles">
+        <div class="mainShop__articles__table">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Unidad</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="products_table">
+              <template id="post-template">
+                <tr class="post">
+                  <td class="product"></td>
+                  <td class="units">
+                    <button class="decrease">-</button>
+                    <span class="unit-value"></span>
+                    <button class="increase">+</button>
+                  </td>
+                  <td class="price"></td>
+                  <td class="total"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          
+        </div>
+      </div>
+      
+      <div class="mainShop__ticket">
+          <p>Total</p>
+          <div class="ticket__totalPrice">
+            <table>
+              <tbody id="ticket_table">
+                <!-- Template para el producto -->
+                <template id="ticket-template">
+                    <tr class="post">
+                        <td class="ticketProductName"></td>
+                        <td class="ticketProductTotal"></td>
+                    </tr>
+                </template>
+
+                <!-- Template para el total del carrito -->
+                <template id="total-template">
+                    <tr class="totalTicket">
+                        <td colspan="2">Total</td>
+                        <td>0</td>
+                    </tr>
+                </template>
+            </tbody>
+          </table>
+          </div>
+      </div>
+    </article>
+
+
+  </body>
+</html>
