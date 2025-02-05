@@ -29,9 +29,14 @@ class Carrito {
                 }
             }
             
-            this.total = this.productosCarrito.reduce((acc, product) => acc + product.quantity *
-                parseFloat(product.price), 0)
+            this.total = this.calcularTotalCarrito()
         }
+    }
+
+    calcularTotalCarrito() {
+        
+        return this.productosCarrito.reduce((acc, product) => acc + product.quantity
+        * parseFloat(product.price), 0)
     }
 
     /*
@@ -105,7 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
+/*
+    Se encarga de mostrar la lista de productos junto con sus atributos y los botones de incrementar y 
+    disminuir la cantidad de productos
+*/
 function mostrarListaProductos(){
     const productsTable = document.getElementById('products_table')
     const postTemplate = document.getElementById('post-template')
@@ -153,6 +161,10 @@ function mostrarListaProductos(){
     })
 }
 
+/*
+    Se encarga de mostrar la información actualizada del carrito, tanto los productos y su total, 
+        como el total del carrito
+*/
 function mostrarCarrito() {
     const tableBody = document.getElementById("ticketTable_body")
     const ticketTemplate = document.getElementById("ticket-template")
